@@ -16,7 +16,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "FlashyCards",
   description: "A flashcard app for spaced repetition learning",
-    icons: "https://3pekix3gj9.ufs.sh/f/P0hjn6zoBOGumFGpCn4REO6aFC9q21QyAKYVdPriwB5lLIT0"
+  icons: "https://3pekix3gj9.ufs.sh/f/P0hjn6zoBOGumFGpCn4REO6aFC9q21QyAKYVdPriwB5lLIT0",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "FlashyCards",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export default function RootLayout({

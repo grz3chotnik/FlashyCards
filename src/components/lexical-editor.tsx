@@ -178,7 +178,7 @@ function ToolbarPlugin() {
   }
 
   const btnClass = (active: boolean) =>
-    `rounded px-1.5 py-1 text-xs font-medium transition-colors ${
+    `rounded p-1.5 text-xs font-medium transition-colors sm:px-2 sm:py-1 ${
       active
         ? "bg-foreground/20 text-foreground"
         : "text-foreground hover:bg-foreground/10 hover:text-foreground"
@@ -186,7 +186,7 @@ function ToolbarPlugin() {
 
   return (
     <Tooltip.Provider delay={400}>
-      <Toolbar.Root className="flex flex-wrap items-center gap-0.5 border-b border-foreground/20 px-2 py-1">
+      <Toolbar.Root className="flex flex-wrap items-center gap-0.5 border-b border-foreground/20 px-1.5 py-1 sm:px-2">
         <Toolbar.Group className="flex gap-0.5">
           <ToolbarButton
             label="Bold"
@@ -235,7 +235,7 @@ function ToolbarPlugin() {
           </ToolbarButton>
         </Toolbar.Group>
 
-        <Toolbar.Separator className="mx-1 h-4 w-px bg-foreground/20" />
+        <Toolbar.Separator className="mx-0.5 hidden h-4 w-px bg-foreground/20 sm:block" />
 
         <Toolbar.Group className="flex gap-0.5">
           <ToolbarButton
@@ -282,7 +282,7 @@ function ToolbarPlugin() {
           </ToolbarButton>
         </Toolbar.Group>
 
-        <Toolbar.Separator className="mx-1 h-4 w-px bg-foreground/20" />
+        <Toolbar.Separator className="mx-0.5 hidden h-4 w-px bg-foreground/20 sm:block" />
 
         <Toolbar.Group className="flex gap-0.5">
           <ToolbarButton
@@ -305,7 +305,7 @@ function ToolbarPlugin() {
           </ToolbarButton>
         </Toolbar.Group>
 
-        <Toolbar.Separator className="mx-1 h-4 w-px bg-foreground/20" />
+        <Toolbar.Separator className="mx-0.5 hidden h-4 w-px bg-foreground/20 sm:block" />
 
         <Toolbar.Group className="flex gap-0.5">
           <ToolbarButton
@@ -462,7 +462,7 @@ export default function LexicalEditor({
         <div className="relative min-h-[120px] px-3 py-2">
           <RichTextPlugin
             contentEditable={
-              <ContentEditable className="min-h-[100px] text-sm text-foreground outline-none" />
+              <ContentEditable className="min-h-[100px] text-base text-foreground outline-none" />
             }
             placeholder={
               <div className="lexical-placeholder">{placeholder}</div>

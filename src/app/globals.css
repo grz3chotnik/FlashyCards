@@ -37,7 +37,7 @@ body {
   left: 0.75rem;
   color: var(--foreground);
   opacity: 0.35;
-  font-size: 0.875rem;
+  font-size: 1rem;
   pointer-events: none;
   user-select: none;
 }
