@@ -1,35 +1,48 @@
 "use client";
 
 import Link from "next/link";
-import {useEffect, useState} from "react";
+import { useState} from "react";
 import { Button } from "@base-ui/react/button";
 import { Dialog } from "@base-ui/react/dialog";
 import { Field } from "@base-ui/react/field";
 import { Input } from "@base-ui/react/input";
 import { Separator } from "@base-ui/react/separator";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 
-const PLACEHOLDER_DECKS = [
-  { id: "1", name: "Japanese Vocabulary", cardCount: 120 },
-  { id: "2", name: "Biology 101", cardCount: 45 },
-  { id: "3", name: "World Capitals", cardCount: 80 },
-];
-
+type Deck = {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  _count: { cards: number };
+};
 
 export default  function DecksPage() {
+  const queryClient = useQueryClient();
 
+  const { data: decks = [] } = useQuery<Deck[]>({
+    queryKey: ["decks"],
+    queryFn: () => fetch("/api/decks").then((r) => r.json()),
+  });
 
-  const [decks, setDecks] = useState(PLACEHOLDER_DECKS);
-  const [newDeckName, setNewDeckName] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const createDeck = useMutation({
+    mutationFn: (name: string) =>
+        fetch("/api/decks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name }),
+        }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["decks"] }),
+  });
 
   function handleAddDeck() {
-
-
+    if (!newDeckName.trim()) return;
+    createDeck.mutate(newDeckName.trim());
+    setNewDeckName("");
     setDialogOpen(false);
   }
-
-
-
+  const [newDeckName, setNewDeckName] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
@@ -105,7 +118,7 @@ export default  function DecksPage() {
               >
                 <span className="font-medium">{deck.name}</span>
                 <span className="text-sm text-foreground/40">
-                  {deck.cardCount} cards
+                  {deck._count.cards} cards
                 </span>
               </Link>
             </li>
