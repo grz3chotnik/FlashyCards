@@ -46,8 +46,14 @@ export default  function DecksPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
-      <div className="flex items-center justify-between">
+      <Link
+        href="/"
+        className="text-sm text-foreground/50 hover:text-foreground"
+      >
+        &larr; Home
+      </Link>
 
+      <div className="mt-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Your Decks</h1>
         <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
           <Dialog.Trigger
@@ -111,16 +117,30 @@ export default  function DecksPage() {
       ) : (
         <ul className="flex flex-col gap-2">
           {decks.map((deck) => (
-            <li key={deck.id}>
-              <Link
-                href={`/decks/${deck.id}/study`}
-                className="flex items-center hover:text-pink-400 justify-between rounded-md border border-foreground/10 px-4 py-3 hover:bg-foreground/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              >
+            <li
+              key={deck.id}
+              className="flex items-center justify-between rounded-md border border-foreground/10 px-4 py-3"
+            >
+              <div>
                 <span className="font-medium">{deck.name}</span>
-                <span className="text-sm text-foreground/40">
+                <span className="ml-2 text-sm text-foreground/40">
                   {deck._count.cards} cards
                 </span>
-              </Link>
+              </div>
+              <div className="flex gap-2">
+                <Link
+                  href={`/decks/${deck.id}/cards`}
+                  className="rounded-md border border-foreground/20 px-3 py-1.5 text-sm font-medium text-foreground/70 hover:bg-foreground/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                  Cards
+                </Link>
+                <Link
+                  href={`/decks/${deck.id}/study`}
+                  className="rounded-md bg-foreground px-3 py-1.5 text-sm font-medium text-background hover:bg-pink-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:bg-pink-500"
+                >
+                  Study
+                </Link>
+              </div>
             </li>
           ))}
         </ul>

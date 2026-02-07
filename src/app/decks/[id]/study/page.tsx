@@ -2,21 +2,29 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useParams } from "next/navigation";
 import { Button } from "@base-ui/react/button";
 import { Separator } from "@base-ui/react/separator";
+import { useQuery } from "@tanstack/react-query";
 
-const PLACEHOLDER_CARDS = [
-  { id: "1", front: "What is the capital of France?", back: "Paris" },
-  { id: "2", front: "What is 2 + 2?", back: "4" },
-  { id: "3", front: "test test", back: "Test" },
-];
+type Card = {
+  id: string;
+  front: string;
+  back: string;
+};
 
 export default function StudyPage() {
+  const { id } = useParams<{ id: string }>();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
 
-  const card = PLACEHOLDER_CARDS[currentIndex];
-  const isFinished = currentIndex >= PLACEHOLDER_CARDS.length;
+  const { data: cards = [], isLoading } = useQuery<Card[]>({
+    queryKey: ["decks", id, "cards"],
+    queryFn: () => fetch(`/api/decks/${id}/cards`).then((r) => r.json()),
+  });
+
+  const card = cards[currentIndex];
+  const isFinished = currentIndex >= cards.length;
 
   function handleRate() {
     setRevealed(false);
@@ -33,16 +41,29 @@ export default function StudyPage() {
          Back to decks
         </Link>
         <span className="text-sm text-foreground/40">
-          {Math.min(currentIndex + 1, PLACEHOLDER_CARDS.length)} /{" "}
-          {PLACEHOLDER_CARDS.length}
+          {Math.min(currentIndex + 1, cards.length)} / {cards.length}
         </span>
       </div>
 
-      {isFinished ? (
+      {isLoading ? (
+        <div className="flex flex-1 flex-col items-center justify-center">
+          <p className="text-foreground/40">Loading cards...</p>
+        </div>
+      ) : cards.length === 0 ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-4">
+          <p className="text-foreground/50">No cards in this deck yet.</p>
+          <Button
+            render={<Link href={`/decks/${id}/cards`} />}
+            className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-foreground/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-800 active:bg-foreground/90"
+          >
+            Add cards
+          </Button>
+        </div>
+      ) : isFinished ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
           <p className="text-xl font-semibold">Session complete!</p>
           <p className="text-foreground/50">
-            You reviewed all {PLACEHOLDER_CARDS.length} cards.
+            You reviewed all {cards.length} cards.
           </p>
           <Button
             render={<Link href="/decks" />}
