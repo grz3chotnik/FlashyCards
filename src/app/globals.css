@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   --background: #ffffff;
@@ -28,4 +29,15 @@ body {
 
 .root {
   isolation: isolate;
+}
+
+.lexical-placeholder {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.75rem;
+  color: var(--foreground);
+  opacity: 0.35;
+  font-size: 0.875rem;
+  pointer-events: none;
+  user-select: none;
 }

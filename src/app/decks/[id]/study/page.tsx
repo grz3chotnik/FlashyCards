@@ -54,7 +54,8 @@ export default function StudyPage() {
           <p className="text-foreground/50">No cards in this deck yet.</p>
           <Button
             render={<Link href={`/decks/${id}/cards`} />}
-            className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-foreground/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-800 active:bg-foreground/90"
+            className="flex h-10 items-center justify-center rounded-md bg-foreground px-3.5 text-base font-medium text-background select-none hover:bg-pink-400 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-pink-500"
+            nativeButton={false}
           >
             Add cards
           </Button>
@@ -67,7 +68,8 @@ export default function StudyPage() {
           </p>
           <Button
             render={<Link href="/decks" />}
-            className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-foreground/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-800 active:bg-foreground/90"
+            className="flex h-10 items-center justify-center rounded-md bg-foreground px-3.5 text-base font-medium text-background select-none hover:bg-pink-400 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-pink-500"
+            nativeButton={false}
           >
             Back to decks
           </Button>
@@ -76,14 +78,18 @@ export default function StudyPage() {
         <div className="flex w-full flex-1 flex-col items-center gap-6">
           {/* Card */}
           <div className="flex min-h-64 w-full flex-col items-center justify-center rounded-lg border border-foreground/10 p-8">
-            <p className="text-center text-lg">{card.front}</p>
+            <div
+              className="prose prose-invert text-center text-lg"
+              dangerouslySetInnerHTML={{ __html: card.front }}
+            />
 
             {revealed && (
               <>
                 <Separator className="my-6 h-px w-full bg-foreground/10" />
-                <p className="text-center text-lg font-semibold">
-                  {card.back}
-                </p>
+                <div
+                  className="prose prose-invert text-center text-lg font-semibold"
+                  dangerouslySetInnerHTML={{ __html: card.back }}
+                />
               </>
             )}
           </div>
@@ -92,33 +98,33 @@ export default function StudyPage() {
           {!revealed ? (
             <Button
               onClick={() => setRevealed(true)}
-              className="rounded-md bg-foreground px-6 py-2 text-sm font-medium text-background hover:bg-foreground/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-800 active:bg-foreground/90"
+              className="flex h-10 items-center justify-center rounded-md bg-foreground px-6 text-base font-medium text-background select-none hover:bg-pink-400 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-pink-500"
             >
               Show Answer
             </Button>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button
                 onClick={handleRate}
-                className="rounded-md border border-red-400/30 px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-500/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-800"
+                className="flex h-10 items-center justify-center rounded-md border border-red-400/30 px-4 text-base font-medium text-red-500 select-none hover:bg-red-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-red-500/20"
               >
                 Again
               </Button>
               <Button
                 onClick={handleRate}
-                className="rounded-md border border-orange-400/30 px-4 py-2 text-sm font-medium text-orange-500 hover:bg-orange-500/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-800"
+                className="flex h-10 items-center justify-center rounded-md border border-orange-400/30 px-4 text-base font-medium text-orange-500 select-none hover:bg-orange-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-orange-500/20"
               >
                 Hard
               </Button>
               <Button
                 onClick={handleRate}
-                className="rounded-md border border-green-400/30 px-4 py-2 text-sm font-medium text-green-500 hover:bg-green-500/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-800"
+                className="flex h-10 items-center justify-center rounded-md border border-green-400/30 px-4 text-base font-medium text-green-500 select-none hover:bg-green-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-green-500/20"
               >
                 Good
               </Button>
               <Button
                 onClick={handleRate}
-                className="rounded-md border border-blue-400/30 px-4 py-2 text-sm font-medium text-blue-500 hover:bg-blue-500/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-800"
+                className="flex h-10 items-center justify-center rounded-md border border-blue-400/30 px-4 text-base font-medium text-blue-500 select-none hover:bg-blue-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-blue-500/20"
               >
                 Easy
               </Button>

@@ -4,11 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@base-ui/react/button";
+import { AlertDialog } from "@base-ui/react/alert-dialog";
 import { Dialog } from "@base-ui/react/dialog";
-import { Field } from "@base-ui/react/field";
-import { Input } from "@base-ui/react/input";
 import { Separator } from "@base-ui/react/separator";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
+import LexicalEditor from "@/components/lexical-editor";
 
 type Card = {
   id: string;
@@ -18,6 +19,10 @@ type Card = {
   createdAt: string;
   updatedAt: string;
 };
+
+function stripHtmlTags(html: string): string {
+  return html.replace(/<[^>]*>/g, "").trim();
+}
 
 export default function CardsPage() {
   const { id } = useParams<{ id: string }>();
@@ -41,13 +46,22 @@ export default function CardsPage() {
     },
   });
 
+  const deleteCard = useMutation({
+    mutationFn: (cardId: string) =>
+      fetch(`/api/decks/${id}/cards/${cardId}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["decks", id, "cards"] });
+      queryClient.invalidateQueries({ queryKey: ["decks"] });
+    },
+  });
+
   const [newFront, setNewFront] = useState("");
   const [newBack, setNewBack] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
   function handleAddCard() {
-    if (!newFront.trim() || !newBack.trim()) return;
-    createCard.mutate({ front: newFront.trim(), back: newBack.trim() });
+    if (!stripHtmlTags(newFront) || !stripHtmlTags(newBack)) return;
+    createCard.mutate({ front: newFront, back: newBack });
     setNewFront("");
     setNewBack("");
     setDialogOpen(false);
@@ -65,56 +79,48 @@ export default function CardsPage() {
       <div className="mt-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Cards</h1>
         <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
-          <Dialog.Trigger className="rounded-md bg-foreground px-3 py-1.5 text-sm font-medium text-background hover:bg-pink-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:bg-pink-500">
+          <Dialog.Trigger className="flex h-10 items-center justify-center rounded-md bg-foreground px-3.5 text-base font-medium text-background select-none hover:bg-pink-400 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-pink-500">
             + New Card
           </Dialog.Trigger>
           <Dialog.Portal>
-            <Dialog.Backdrop className="fixed inset-0 bg-black/40" />
-            <Dialog.Popup className="fixed top-1/2 left-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background p-6 shadow-xl border border-foreground/10">
-              <Dialog.Title className="text-lg font-semibold">
+            <Dialog.Backdrop className="fixed inset-0 bg-black opacity-20 transition-all duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 dark:opacity-70" />
+            <Dialog.Popup className="fixed top-1/2 left-1/2 -mt-8 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background p-6 text-foreground outline outline-1 outline-foreground/10 transition-all duration-150 data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[starting-style]:scale-90 data-[starting-style]:opacity-0">
+              <Dialog.Title className="-mt-1.5 mb-1 text-lg font-medium">
                 Add a new card
               </Dialog.Title>
-              <Dialog.Description className="mt-1 text-sm text-foreground/50">
+              <Dialog.Description className="mb-6 text-base text-foreground/50">
                 Enter the front and back of the card.
               </Dialog.Description>
               <form
-                className="mt-4 flex flex-col gap-4"
+                className="flex flex-col gap-4"
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleAddCard();
                 }}
               >
-                <Field.Root className="flex flex-col gap-1">
-                  <Field.Label className="text-sm font-medium">
-                    Front
-                  </Field.Label>
-                  <Input
-                    required
-                    placeholder="e.g. Hola"
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-medium">Front</label>
+                  <LexicalEditor
                     value={newFront}
-                    onChange={(e) => setNewFront(e.target.value)}
-                    className="h-10 w-full rounded-md border border-foreground/20 bg-transparent pl-3.5 text-base text-foreground focus:outline-2 focus:-outline-offset-1 focus:outline-white"
+                    onChange={setNewFront}
+                    placeholder="e.g. Hola"
                   />
-                </Field.Root>
-                <Field.Root className="flex flex-col gap-1">
-                  <Field.Label className="text-sm font-medium">
-                    Back
-                  </Field.Label>
-                  <Input
-                    required
-                    placeholder="e.g. Hello"
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-medium">Back</label>
+                  <LexicalEditor
                     value={newBack}
-                    onChange={(e) => setNewBack(e.target.value)}
-                    className="h-10 w-full rounded-md border border-foreground/20 bg-transparent pl-3.5 text-base text-foreground focus:outline-2 focus:-outline-offset-1 focus:outline-white"
+                    onChange={setNewBack}
+                    placeholder="e.g. Hello"
                   />
-                </Field.Root>
-                <div className="flex justify-end gap-2">
-                  <Dialog.Close className="rounded-md border border-foreground/20 px-3 py-1.5 text-sm font-medium text-foreground/70 hover:bg-foreground/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                </div>
+                <div className="flex justify-end gap-4">
+                  <Dialog.Close className="flex h-10 items-center justify-center rounded-md border border-foreground/20 px-3.5 text-base font-medium text-foreground/70 select-none hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-foreground/10">
                     Cancel
                   </Dialog.Close>
                   <Button
                     type="submit"
-                    className="rounded-md bg-foreground px-3 py-1.5 text-sm font-medium text-background hover:bg-foreground/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:bg-foreground/90"
+                    className="flex h-10 items-center justify-center rounded-md bg-foreground px-3.5 text-base font-medium text-background select-none hover:bg-pink-400 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-pink-500"
                   >
                     Add
                   </Button>
@@ -138,8 +144,40 @@ export default function CardsPage() {
               key={card.id}
               className="flex items-center justify-between rounded-md border border-foreground/10 px-4 py-3"
             >
-              <span className="font-medium">{card.front}</span>
-              <span className="text-sm text-foreground/40">{card.back}</span>
+              <div
+                className="prose prose-invert prose-sm line-clamp-1 flex-1"
+                dangerouslySetInnerHTML={{ __html: card.front }}
+              />
+              <AlertDialog.Root>
+                <AlertDialog.Trigger
+                  className="ml-3 rounded p-1 text-gray-600 hover:bg-red-500/10 hover:text-red-500 transition-colors"
+                  aria-label="Delete card"
+                >
+                  <Trash2 size={16} />
+                </AlertDialog.Trigger>
+                <AlertDialog.Portal>
+                  <AlertDialog.Backdrop className="fixed inset-0 bg-black opacity-20 transition-all duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 dark:opacity-70" />
+                  <AlertDialog.Popup className="fixed top-1/2 left-1/2 -mt-8 w-96 max-w-[calc(100vw-3rem)] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background p-6 text-foreground outline outline-1 outline-foreground/10 transition-all duration-150 data-[ending-style]:scale-90 data-[ending-style]:opacity-0 data-[starting-style]:scale-90 data-[starting-style]:opacity-0">
+                    <AlertDialog.Title className="-mt-1.5 mb-1 text-lg font-medium">
+                      Delete card?
+                    </AlertDialog.Title>
+                    <AlertDialog.Description className="mb-6 text-base text-foreground/50">
+                      You can&apos;t undo this action.
+                    </AlertDialog.Description>
+                    <div className="flex justify-end gap-4">
+                      <AlertDialog.Close className="flex h-10 items-center justify-center rounded-md border border-foreground/20 px-3.5 text-base font-medium text-foreground/70 select-none hover:bg-foreground/5 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-foreground/10">
+                        Cancel
+                      </AlertDialog.Close>
+                      <AlertDialog.Close
+                        className="flex h-10 items-center justify-center rounded-md border border-red-500/30 px-3.5 text-base font-medium text-red-500 select-none hover:bg-red-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-red-500 active:bg-red-500/20"
+                        onClick={() => deleteCard.mutate(card.id)}
+                      >
+                        Delete
+                      </AlertDialog.Close>
+                    </div>
+                  </AlertDialog.Popup>
+                </AlertDialog.Portal>
+              </AlertDialog.Root>
             </li>
           ))}
         </ul>

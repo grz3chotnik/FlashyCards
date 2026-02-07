@@ -13,7 +13,7 @@ export default  function Home() {
       </p>
       <Button
         render={<Link href="/decks" />}
-        className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background hover:bg-pink-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:bg-pink-500"
+        className="flex h-10 items-center justify-center rounded-md bg-foreground px-3.5 text-base font-medium text-background select-none hover:bg-pink-400 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-pink-500"
         nativeButton={false}
       >
         Go to your decks
