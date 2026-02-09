@@ -399,7 +399,19 @@ function LoadInitialHTMLPlugin({ html }: { html: string }) {
       const nodes = $generateNodesFromDOM(editor, dom);
       const root = $getRoot();
       root.clear();
-      nodes.forEach((node) => root.append(node));
+
+      // Wrap any text nodes or inline nodes in paragraphs
+      nodes.forEach((node) => {
+        if (node.getType() === 'text' || node.getType() === 'linebreak') {
+          // Wrap text nodes and line breaks in a paragraph
+          const paragraph = $createParagraphNode();
+          paragraph.append(node);
+          root.append(paragraph);
+        } else {
+          // Element nodes can be added directly
+          root.append(node);
+        }
+      });
     });
   }, [editor, html]);
 
@@ -408,13 +420,13 @@ function LoadInitialHTMLPlugin({ html }: { html: string }) {
 
 type LexicalEditorProps = {
   value: string;
-  onChange: (html: string) => void;
+  onChangeAction: (html: string) => void;
   placeholder?: string;
 };
 
 export default function LexicalEditor({
   value,
-  onChange,
+  onChangeAction,
   placeholder = "Type something...",
 }: LexicalEditorProps) {
   const [key, setKey] = useState(0);
@@ -445,14 +457,14 @@ export default function LexicalEditor({
     []
   );
 
-  const handleChange = useCallback(
+  const handleEditorChange = useCallback(
     (_editorState: EditorState, editor: LexicalEditorType) => {
       editor.read(() => {
         const html = $generateHtmlFromNodes(editor);
-        onChange(html);
+        onChangeAction(html);
       });
     },
-    [onChange]
+    [onChangeAction]
   );
 
   return (
@@ -473,7 +485,7 @@ export default function LexicalEditor({
           <ListPlugin />
           <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
           <ImagePastePlugin />
-          <OnChangePlugin onChange={handleChange} />
+          <OnChangePlugin onChange={handleEditorChange} />
           {value && key === 0 && <LoadInitialHTMLPlugin html={value} />}
         </div>
       </div>

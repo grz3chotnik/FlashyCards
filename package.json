@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
+    "@clerk/nextjs": "^6.37.3",
+    "@clerk/themes": "^2.4.51",
     "@lexical/code": "^0.40.0",
     "@lexical/html": "^0.40.0",
     "@lexical/list": "^0.40.0",
@@ -27,6 +29,7 @@
     "pg": "^8.18.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "ts-fsrs": "^5.2.3",
     "uploadthing": "^7.7.4"
   },
   "devDependencies": {

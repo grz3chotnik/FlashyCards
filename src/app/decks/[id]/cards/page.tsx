@@ -10,6 +10,7 @@ import { Separator } from "@base-ui/react/separator";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Trash2 } from "lucide-react";
 import LexicalEditor from "@/components/lexical-editor";
+import { Skeleton } from "@/components/skeleton";
 
 type Card = {
   id: string;
@@ -28,7 +29,7 @@ export default function CardsPage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
 
-  const { data: cards = [] } = useQuery<Card[]>({
+  const { data: cards = [], isLoading } = useQuery<Card[]>({
     queryKey: ["decks", id, "cards"],
     queryFn: () => fetch(`/api/decks/${id}/cards`).then((r) => r.json()),
   });
@@ -147,7 +148,7 @@ export default function CardsPage() {
                   <label className="text-sm font-medium">Front</label>
                   <LexicalEditor
                     value={front}
-                    onChange={setFront}
+                    onChangeAction={setFront}
                     placeholder="e.g. Hola"
                   />
                 </div>
@@ -155,7 +156,7 @@ export default function CardsPage() {
                   <label className="text-sm font-medium">Back</label>
                   <LexicalEditor
                     value={back}
-                    onChange={setBack}
+                    onChangeAction={setBack}
                     placeholder="e.g. Hello"
                   />
                 </div>
@@ -178,7 +179,22 @@ export default function CardsPage() {
 
       <Separator className="my-4 h-px bg-foreground/10" />
 
-      {cards.length === 0 ? (
+      {isLoading ? (
+        <ul className="flex flex-col gap-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <li
+              key={i}
+              className="flex items-center justify-between rounded-md border border-foreground/10 px-4 py-3"
+            >
+              <Skeleton className="h-4 w-3/4" />
+              <div className="ml-3 flex items-center gap-1">
+                <Skeleton className="h-6 w-6" />
+                <Skeleton className="h-6 w-6" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : cards.length === 0 ? (
         <p className="py-12 text-center text-foreground/40">
           No cards yet. Add one to get started!
         </p>
