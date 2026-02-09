@@ -27,10 +27,13 @@ type Deck = {
 export default  function DecksPage() {
   const queryClient = useQueryClient();
 
-  const { data: decks = [], isLoading } = useQuery<Deck[]>({
+  const { data, isLoading } = useQuery<{ decks: Deck[]; streak: number }>({
     queryKey: ["decks"],
     queryFn: () => fetch("/api/decks").then((r) => r.json()),
   });
+
+  const decks = data?.decks ?? [];
+  const streak = data?.streak ?? 0;
 
   const createDeck = useMutation({
     mutationFn: (name: string) =>
@@ -125,8 +128,15 @@ export default  function DecksPage() {
         />
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-4">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
+        <div className="flex items-center gap-3">
           <h1 className="text-xl font-bold sm:text-2xl">Your Decks</h1>
+          {streak > 0 && (
+            <span className="flex items-center gap-1 rounded-full bg-orange-500/10 px-2.5 py-1 text-sm font-semibold text-orange-400">
+              🔥 {streak}
+            </span>
+          )}
+        </div>
         <div className="flex gap-2">
           <Dialog.Root open={importDialogOpen} onOpenChange={setImportDialogOpen}>
             <Dialog.Trigger
@@ -315,8 +325,8 @@ export default  function DecksPage() {
               className="flex flex-col gap-3 rounded-md border border-foreground/10 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-2"
             >
               <div className="min-w-0 flex-1">
-                <span className="font-medium truncate">{deck.name}</span>
-                <span className="ml-2 text-sm text-foreground/40">
+                <span className="block truncate font-medium">{deck.name}</span>
+                <span className="text-sm text-foreground/40">
                   {deck._count.cards} cards
                 </span>
                 {deck._count.dueCards > 0 && (

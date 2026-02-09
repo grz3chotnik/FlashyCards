@@ -41,7 +41,49 @@ export async function GET() {
     },
   }));
 
-  return NextResponse.json(decksWithDueCount);
+  // Calculate study streak from review logs
+  const reviewDates = await prisma.reviewLog.findMany({
+    where: {
+      card: { deck: { userId: user.id } },
+    },
+    select: { review: true },
+    orderBy: { review: "desc" },
+  });
+
+  let streak = 0;
+  if (reviewDates.length > 0) {
+    const uniqueDays = new Set(
+      reviewDates.map((r) => r.review.toISOString().slice(0, 10))
+    );
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayStr = today.toISOString().slice(0, 10);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().slice(0, 10);
+
+    // Streak starts from today or yesterday
+    if (uniqueDays.has(todayStr)) {
+      streak = 1;
+      const d = new Date(today);
+      d.setDate(d.getDate() - 1);
+      while (uniqueDays.has(d.toISOString().slice(0, 10))) {
+        streak++;
+        d.setDate(d.getDate() - 1);
+      }
+    } else if (uniqueDays.has(yesterdayStr)) {
+      streak = 1;
+      const d = new Date(yesterday);
+      d.setDate(d.getDate() - 1);
+      while (uniqueDays.has(d.toISOString().slice(0, 10))) {
+        streak++;
+        d.setDate(d.getDate() - 1);
+      }
+    }
+  }
+
+  return NextResponse.json({ decks: decksWithDueCount, streak });
 }
 
 // POST /api/decks — create a new deck for the authenticated user

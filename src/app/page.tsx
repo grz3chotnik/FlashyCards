@@ -58,6 +58,18 @@ export default function Home() {
           </SignUpButton>
         </div>
       </SignedOut>
+
+      <footer className="absolute bottom-4 text-xs text-foreground/30">
+        made with ❤️ by{" "}
+        <a
+          href="https://github.com/grz3chotnik"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-foreground/50 hover:text-foreground"
+        >
+          grz3chotnik
+        </a>
+      </footer>
     </div>
   );
 }
