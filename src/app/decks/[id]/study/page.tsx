@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@base-ui/react/button";
 import { Separator } from "@base-ui/react/separator";
@@ -54,6 +54,25 @@ export default function StudyPage() {
     if (!card) return;
     reviewMutation.mutate({ cardId: card.id, rating });
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!card || isFinished || reviewMutation.isPending) return;
+
+      if (!revealed && e.code === "Space") {
+        e.preventDefault();
+        setRevealed(true);
+      } else if (revealed) {
+        if (e.key === "1") handleRate(Rating.Again);
+        else if (e.key === "2") handleRate(Rating.Hard);
+        else if (e.key === "3") handleRate(Rating.Good);
+        else if (e.key === "4") handleRate(Rating.Easy);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [card, revealed, isFinished, reviewMutation.isPending]);
 
   return (
     <div className="mx-auto flex min-h-screen max-w-xl flex-col items-center px-4 py-12">
@@ -135,6 +154,7 @@ export default function StudyPage() {
               className="flex h-10 items-center justify-center rounded-md bg-foreground px-6 text-base font-medium text-background select-none hover:bg-pink-400 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-pink-500"
             >
               Show Answer
+              <span className="ml-2 text-xs opacity-50">Space</span>
             </Button>
           ) : (
             <div className="flex gap-3">
@@ -144,6 +164,7 @@ export default function StudyPage() {
                 className="flex h-10 items-center justify-center rounded-md border border-red-400/30 px-4 text-base font-medium text-red-500 select-none hover:bg-red-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Again
+                <span className="ml-1.5 text-xs opacity-50">1</span>
               </Button>
               <Button
                 onClick={() => handleRate(Rating.Hard)}
@@ -151,6 +172,7 @@ export default function StudyPage() {
                 className="flex h-10 items-center justify-center rounded-md border border-orange-400/30 px-4 text-base font-medium text-orange-500 select-none hover:bg-orange-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Hard
+                <span className="ml-1.5 text-xs opacity-50">2</span>
               </Button>
               <Button
                 onClick={() => handleRate(Rating.Good)}
@@ -158,6 +180,7 @@ export default function StudyPage() {
                 className="flex h-10 items-center justify-center rounded-md border border-green-400/30 px-4 text-base font-medium text-green-500 select-none hover:bg-green-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Good
+                <span className="ml-1.5 text-xs opacity-50">3</span>
               </Button>
               <Button
                 onClick={() => handleRate(Rating.Easy)}
@@ -165,6 +188,7 @@ export default function StudyPage() {
                 className="flex h-10 items-center justify-center rounded-md border border-blue-400/30 px-4 text-base font-medium text-blue-500 select-none hover:bg-blue-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-white active:bg-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Easy
+                <span className="ml-1.5 text-xs opacity-50">4</span>
               </Button>
             </div>
           )}
