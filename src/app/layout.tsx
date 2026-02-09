@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import {Analytics} from "@vercel/analytics/next";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "FlashyCards",
   description: "A flashcard app for spaced repetition learning",
-  icons: "https://3pekix3gj9.ufs.sh/f/P0hjn6zoBOGumFGpCn4REO6aFC9q21QyAKYVdPriwB5lLIT0",
+  icons:
+    "https://3pekix3gj9.ufs.sh/f/P0hjn6zoBOGumFGpCn4REO6aFC9q21QyAKYVdPriwB5lLIT0",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -38,13 +39,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-      <Providers>
-        <div className="root">
+        <Providers>
+          <div className="root">
             {children}
-          <Analytics />
-
-        </div>
-      </Providers>
+            <Analytics />
+          </div>
+        </Providers>
       </body>
     </html>
   );
